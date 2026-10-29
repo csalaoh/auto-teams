@@ -25,6 +25,6 @@ jobs:
 
       - name: Szkript futtatása
         env:
-          API_KEY: ${{ secrets.OPENAI_API_KEY }}  # Biztonságosan átadott kulcs
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # Biztonságosan átadott kulcs
         run: |
           python script.py
