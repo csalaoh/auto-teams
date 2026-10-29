@@ -2,7 +2,8 @@ name: Teams and Task Summary
 
 on:
   workflow_dispatch:
-  # Itt majd később beállíthatjuk az időzítést is (schedule)
+  schedule:
+    - cron: '0 5 * * *'
 
 jobs:
   run-python-script:
