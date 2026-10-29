@@ -29,7 +29,7 @@ Különítsd el a Sürgős / Fontos teendőket és a Szülői kérdéseket.
 {teams_messages}
 """
 
-model = genai.GenerativeModel("gemini-2.5-flash") # vagy "gemini-2.5-flash"
+model = genai.GenerativeModel("gemini-3.8-flash") # vagy "gemini-2.5-flash"
 response = model.generate_content(prompt)
 
 summary_text = response.text
