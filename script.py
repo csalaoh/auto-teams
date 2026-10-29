@@ -11,12 +11,14 @@ if not api_key:
 
 client = OpenAI(api_key=api_key)
 
-# 2. Példa Teams üzenetek (később cserélhetjük fájlból olvasásra)
-teams_messages = """
-[10:00] Kovács Péter: Holnap tanári értekezlet lesz a nagytemben 14:50-kor.
-[10:15] Nagy Anna: Kérem, hogy a heti óraterveket legkésőbb péntekig küldjétek be.
-[11:00] Szülő (Tóth Judit): Érdeklődnék, hogy a jövő héten indulnak-e a délutáni szakkörök?
-"""
+# 2. Üzenetek beolvasása külső fájlból
+file_path = "teams_messages.txt"
+
+if os.path.exists(file_path):
+    with open(file_path, "r", encoding="utf-8") as f:
+        teams_messages = f.read()
+else:
+    teams_messages = "Nincsenek elérhető üzenetek a fájlban."
 
 # 3. OpenAI hívás az összefoglalóhoz
 prompt = f"""
@@ -46,7 +48,6 @@ sender_password = os.environ.get("EMAIL_PASSWORD")
 receiver_email = os.environ.get("EMAIL_TO")
 
 if sender_email and sender_password and receiver_email:
-    # Üzenet összeállítása
     msg = MIMEMultipart()
     msg["From"] = sender_email
     msg["To"] = receiver_email
@@ -55,9 +56,8 @@ if sender_email and sender_password and receiver_email:
     msg.attach(MIMEText(summary_text, "plain", "utf-8"))
 
     try:
-        # Kapcsolódás az SMTP szerverhez
         server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()  # Titkosítás
+        server.starttls()
         server.login(sender_email, sender_password)
         server.sendmail(sender_email, receiver_email, msg.as_string())
         server.quit()
