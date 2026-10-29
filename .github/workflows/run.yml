@@ -1,13 +1,13 @@
 name: Teams and Task Summary
 
 on:
-  schedule:
-    - cron: '0 16 * * 1-5'  # Hétfőtől péntekig minden nap 16:00 UTC-kor (télen/nyáron igazítsd az időzónához)
-  workflow_dispatch: # Engedélyezi a kézi indítást is a GitHub felületéről teszteléshez
+  workflow_dispatch:
+  # Itt majd később beállíthatjuk az időzítést is (schedule)
 
 jobs:
   run-python-script:
     runs-on: ubuntu-latest
+
     steps:
       - name: Kód letöltése
         uses: actions/checkout@v4
@@ -25,6 +25,9 @@ jobs:
 
       - name: Szkript futtatása
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # Biztonságosan átadott kulcs
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
         run: |
           python script.py

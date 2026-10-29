@@ -2,14 +2,14 @@ import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from openai import OpenAI
+import google.generativeai as genai
 
-# 1. Ellenőrizzük az OpenAI kulcsot
-api_key = os.environ.get("OPENAI_API_KEY")
+# 1. Ellenőrizzük a Gemini kulcsot
+api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
-    raise ValueError("Hiba: Az OPENAI_API_KEY környezeti változó nincs beállítva.")
+    raise ValueError("Hiba: A GEMINI_API_KEY környezeti változó nincs beállítva.")
 
-client = OpenAI(api_key=api_key)
+genai.configure(api_key=api_key)
 
 # 2. Üzenetek beolvasása külső fájlból
 file_path = "teams_messages.txt"
@@ -20,7 +20,7 @@ if os.path.exists(file_path):
 else:
     teams_messages = "Nincsenek elérhető üzenetek a fájlban."
 
-# 3. OpenAI hívás az összefoglalóhoz
+# 3. Gemini modell hívás az összefoglalóhoz
 prompt = f"""
 Elemezd, kategorizáld és foglald össze az alábbi Microsoft Teams üzeneteket. 
 Különítsd el a Sürgős / Fontos teendőket és a Szülői kérdéseket.
@@ -29,13 +29,10 @@ Különítsd el a Sürgős / Fontos teendőket és a Szülői kérdéseket.
 {teams_messages}
 """
 
-response = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[{"role": "user", "content": prompt}],
-    temperature=0.3,
-)
+model = genai.GenerativeModel("gemini-1.5-flash")
+response = model.generate_content(prompt)
 
-summary_text = response.choices[0].message.content
+summary_text = response.text
 print("Generált összefoglaló:")
 print(summary_text)
 
@@ -51,7 +48,7 @@ if sender_email and sender_password and receiver_email:
     msg = MIMEMultipart()
     msg["From"] = sender_email
     msg["To"] = receiver_email
-    msg["Subject"] = "Teams Napi Összefoglaló (Automata)"
+    msg["Subject"] = "Teams Napi Összefoglaló (Gemini)"
 
     msg.attach(MIMEText(summary_text, "plain", "utf-8"))
 
